@@ -21,7 +21,13 @@ CREATE TABLE account (
 )
 
 CREATE TABLE transfer (
-    transfer_id INT 
+    transfer_id INT AUTO_INCREMENT primary key,
+    account_from INT not null,
+    account_to int not null, 
+    betrag decimal(10, 2) not null,
+    datum datetime not null,
+    foreign key(account_from) references accounts(account_id),
+    foreign key (account_to) references accounts(account_id)  
 )
 
 CREATE TABLE ausgabe (
