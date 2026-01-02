@@ -130,9 +130,33 @@ def complete():
     db_write("DELETE FROM todos WHERE user_id=%s AND id=%s", (current_user.id, todo_id,))
     return redirect(url_for("index"))
 
-@app.route("/test", methods=["GET"])
-def users():
-    return "ACCOUNTS and i got hella homies"
+
+
+
+
+
+
+
+@app.route("/account", methods=["GET", "POST"])
+#@login_required
+def accounts():
+    if request.method == "GET":
+        rows = db_read(
+            "SELECT account_id, name, type FROM accounts WHERE user_id =%",
+            (current_user.id)
+        )
+        return render_template("accounts.html", accounts = rows)
+    name = request.form["name"]
+    account_type = request.form["type"]
+
+    db_write(
+        "INSERT INTO accounts(user_id, name, type) VALUES (%s,%s, %s)"
+        (current_user.id, name, account_type)
+    )
+    return redirect(url_for("accounts"))
+
+
+
 
 
 if __name__ == "__main__":
