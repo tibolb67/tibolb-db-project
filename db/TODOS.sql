@@ -31,15 +31,28 @@ CREATE TABLE transfer (
 )
 
 CREATE TABLE ausgabe (
-    ausgabe_id
+    ausgabe_id int AUTO_INCREMENT primary key,
+    account_id int not null,
+    kategorie_id int not null,
+    datum datetime not null,
+    betrag deciman(10, 2) not null,
+    foreign key(account_id) references accounts(account_id)
+    foreign key(kategorie_id) references kategorien(kategorie_id)
+
 )
 
 CREATE TABLE reminder (
-    reminder_id
+    reminder_id int AUTO_INCREMENT primary key,
+    ausgabe_id int not null,
+    betrag decimal(10, 2) not null,
+    fällig_bis date not null
+    fällig_von date not null,
+    foreign key(ausgabe_id) references ausgaben(ausgabe_id)
 )
 
 CREATE TABLE kategorie (
-    kategorie_id
+    kategorie_id int AUTO_INCREMENT primary key,
+    name varchar(50) not null
 )
 
 CREATE TABLE budget (
