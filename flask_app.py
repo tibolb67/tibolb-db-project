@@ -138,11 +138,11 @@ def complete():
 
 
 @app.route("/account", methods=["GET", "POST"])
-@login_required
+#@login_required
 def accounts():
     if request.method == "GET":
         rows = db_read(
-            "SELECT account_id, name, type FROM accounts WHERE user_id =%",
+            "SELECT account_id, name, type FROM accounts WHERE user_id =%s",
             (current_user.id)
         )
         return render_template("accounts.html", accounts = rows)
