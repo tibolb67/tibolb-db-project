@@ -12,13 +12,18 @@ CREATE TABLE todos (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE account (
-    acount_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NULL
-    name VARCHAR(100) NOT NULL 
-    type ENUM('savings' 'checking' 'private' 'youth')
-    FOREIGN KEY user_id REFERENCES users(id)
-)
+CREATE TABLE accounts (
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    name VARCHAR(100) NOT NULL,
+    type ENUM('savings', 'checking', 'private', 'youth'),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE kategorien (
+    kategorie_id int AUTO_INCREMENT primary key,
+    name varchar(50) not null
+);
 
 CREATE TABLE transfer (
     transfer_id INT AUTO_INCREMENT primary key,
@@ -28,32 +33,27 @@ CREATE TABLE transfer (
     datum datetime not null,
     foreign key(account_from) references accounts(account_id),
     foreign key (account_to) references accounts(account_id)  
-)
+);
 
-CREATE TABLE ausgabe (
+CREATE TABLE ausgaben (
     ausgabe_id int AUTO_INCREMENT primary key,
     account_id int not null,
     kategorie_id int not null,
     datum datetime not null,
-    betrag deciman(10, 2) not null,
-    foreign key(account_id) references accounts(account_id)
+    betrag decimal(10, 2) not null,
+    foreign key(account_id) references accounts(account_id),
     foreign key(kategorie_id) references kategorien(kategorie_id)
 
-)
+);
 
 CREATE TABLE reminder (
     reminder_id int AUTO_INCREMENT primary key,
     ausgabe_id int not null,
     betrag decimal(10, 2) not null,
-    fällig_bis date not null
-    fällig_von date not null,
+    faellig_bis date not null,
+    faellig_von date not null,
     foreign key(ausgabe_id) references ausgaben(ausgabe_id)
-)
-
-CREATE TABLE kategorie (
-    kategorie_id int AUTO_INCREMENT primary key,
-    name varchar(50) not null
-)
+);
 
 CREATE TABLE budget (
     budget_id int AUTO_INCREMENT primary key,
@@ -64,7 +64,7 @@ CREATE TABLE budget (
     foreign key(user_id) references users(id),
     foreign key (kategorie_id) references kategorien(kategorie_id),
     foreign key (income_id) references income(income_id)
-)
+);
 
 CREATE TABLE income (
     income_id int AUTO_INCREMENT primary key,
