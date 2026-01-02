@@ -130,7 +130,7 @@ def complete():
     db_write("DELETE FROM todos WHERE user_id=%s AND id=%s", (current_user.id, todo_id,))
     return redirect(url_for("index"))
 
-@app.route("/users", methods=["GET"])
+@app.route("/test", methods=["GET"])
 def users():
     return "ACCOUNTS and i got hella homies"
 
