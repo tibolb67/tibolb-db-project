@@ -138,7 +138,7 @@ def complete():
 
 
 @app.route("/account", methods=["GET", "POST"])
-#@login_required
+@login_required
 def accounts():
     if request.method == "GET":
         rows = db_read(
