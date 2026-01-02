@@ -132,7 +132,8 @@ def complete():
 
 @app.route("/users", methods=["GET"])
 def users():
-    return "ACCOUNTS"
+    return "ACCOUNTS and i got hella homies"
+
 
 if __name__ == "__main__":
     app.run()
