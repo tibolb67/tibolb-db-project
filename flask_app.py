@@ -133,10 +133,5 @@ def complete():
 
 
 
-@app.route("a", methods=["GET", "POST"])
-
-
-
-
 if __name__ == "__main__":
     app.run()
