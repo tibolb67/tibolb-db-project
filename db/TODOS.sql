@@ -66,39 +66,39 @@ CREATE TABLE budget (
 );
 
 
-insert into users(username, password) values
-('tibolb' 'tobi');
+INSERT INTO users (username, password_hash) VALUES
+('tibolb', 'tobi');
 
-insert into accounts(user_id, name, type) values
-('1' 'Main account' 'private'),
-('1' 'Savings account' 'savings'),
-('1' 'Youth Account' 'youth'),
-('1' 'Checkings account' 'checkings');
+INSERT INTO accounts (user_id, name, type) VALUES
+(1, 'Main account', 'private'),
+(1, 'Savings account', 'savings'),
+(1, 'Youth Account', 'youth'),
+(1, 'Checkings account', 'checking');
 
-insert into kategorien(name) values
+INSERT INTO kategorien (name) VALUES
 ('Essen'),
 ('Abo'),
 ('Miete'),
 ('Unterhaltung'),
-('Kleider');
-('Saving')
+('Kleider'),
+('Saving');
 
-insert into transfer(account_from, account_to, betrag, datum) values
-('1' '2' '100' '2026-01-15 10:00:00'),
-('2' '1' '100' '2026-01-16 10:00:00');
+INSERT INTO transfer (account_from, account_to, betrag, datum) VALUES
+(1, 2, 100, '2026-01-15 10:00:00'),
+(2, 1, 100, '2026-01-16 10:00:00');
 
-insert into ausgaben(account_id, kategorie_id, datum, betrag) values
-('1' '1' '2026-01-14 16:00:00' '25'),
-('1' '3' '2026-01-01' '1500');
+INSERT INTO ausgaben (account_id, kategorie_id, datum, betrag) VALUES
+(1, 1, '2026-01-14 16:00:00', 25),
+(1, 3, '2026-01-01', 1500);
 
-insert into income(user_id, betrag, datum) values
-('1' '4500' '2026-01-01 10:00:00'),
-('1' '4500' '2026-02-01 10:00:00');
+INSERT INTO income (user_id, betrag, datum) VALUES
+(1, 4500, '2026-01-01 10:00:00'),
+(1, 4500, '2026-02-01 10:00:00');
 
-insert into budget(user_id, kategorie_id, income_id, limit_budget) values
-('1' '1' '1' '400r'),
-('1' '2' '1' '100'),
-('1' '3' '1' '1500'),
-('1' '4' '1' '700'),
-('1' '5' '1' '300'),
-('1' '6' '2' '1500'),
+INSERT INTO budget (user_id, kategorie_id, income_id, limit_budget) VALUES
+(1, 1, 1, 400),
+(1, 2, 1, 100),
+(1, 3, 1, 1500),
+(1, 4, 1, 700),
+(1, 5, 1, 300),
+(1, 6, 2, 1500);
