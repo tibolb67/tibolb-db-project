@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container" style="max-width: 1200px;">
+
+  <h2 style="margin: 20px 0 10px;">DB Explorer 🧭</h2>
+
+  {% if error %}
+    <div class="alert alert-warning" role="alert" style="margin-bottom: 15px;">
+      {{ error }}
+    </div>
+  {% endif %}
+
+  <div style="display: grid; grid-template-columns: 360px 1fr; gap: 18px; align-items: start;">
+
+    <!-- LEFT: controls -->
+    <div class="card" style="border: 1px solid #e6e6e6; border-radius: 10px; overflow: hidden;">
+      <div style="padding: 14px 14px 10px; border-bottom: 1px solid #eee; background: #fafafa;">
+        <strong>Choose tables</strong>
+      </div>
+
+      <div style="padding: 14px;">
+        <form method="POST">
+
+          <label for="tableFilter" style="display:block; font-weight:600; margin-bottom:6px;">
+            Filter table list
+          </label>
+          <input id="tableFilter" type="text" class="form-control"
+                 placeholder="Type to filter…"
+                 oninput="filterTables()"
+                 style="margin-bottom: 12px;">
+
+          <label style="display:block; font-weight:600; margin-bottom:6px;">
+            Tables
+          </label>
+
+          <div id="tableList"
+               style="border: 1px solid #eee; border-radius: 8px; padding: 10px; max-height: 280px; overflow:auto; background:#fff;">
+            {% for t in all_tables %}
+              <label class="table-option" style="display:block; padding: 4px 0; cursor:pointer;">
+                <input type="checkbox" name="tables" value="{{ t }}"
+                       {% if t in selected_tables %}checked{% endif %}>
+                <span style="margin-left: 6px;">{{ t }}</span>
+              </label>
+            {% endfor %}
+          </div>
+
+          <div style="margin-top: 12px;">
+            <label for="quick_table" style="display:block; font-weight:600; margin-bottom:6px;">
+              Quick add (type table name)
+            </label>
+            <input id="quick_table" name="quick_table" type="text" class="form-control"
+                   placeholder="e.g. todos"
+                   style="margin-bottom: 12px;">
+          </div>
+
+          <div style="margin-top: 6px;">
+            <label for="limit" style="display:block; font-weight:600; margin-bottom:6px;">
+              Rows per table
+            </label>
+            <input id="limit" name="limit" type="number" min="1" max="1000"
+                   class="form-control" value="{{ limit }}">
+            <div style="font-size: 12px; color:#666; margin-top:6px;">
+              Tip: keep it small for wide tables (1–1000).
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top: 14px;">
+            <button type="submit" class="btn btn-primary" style="flex:1;">
+              Show tables
+            </button>
+            <button type="button" class="btn btn-outline-secondary" style="flex:1;"
+                    onclick="selectNone()">
+              Select none
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- RIGHT: results -->
+    <div>
+
+      {% if results %}
+        {% for table_name, rows in results.items() %}
+          <div class="card" style="border: 1px solid #e6e6e6; border-radius: 10px; overflow:hidden; margin-bottom: 16px;">
+            <div style="padding: 12px 14px; border-bottom:1px solid #eee; background:#fafafa; display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-weight:700;">{{ table_name }}</div>
+              <div style="font-size: 12px; color:#666;">
+                {{ rows|length }} row(s) shown
+              </div>
+            </div>
+
+            {% if rows and rows|length > 0 %}
+              <div style="overflow:auto;">
+                <table class="table table-striped table-bordered" style="margin:0; font-size: 0.92rem;">
+                  <thead style="position: sticky; top: 0; background: #fff;">
+                    <tr>
+                      {% for col in rows[0].keys() %}
+                        <th style="white-space: nowrap;">{{ col }}</th>
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for r in rows %}
+                      <tr>
+                        {% for v in r.values() %}
+                          <td style="white-space: nowrap; max-width: 240px; overflow:hidden; text-overflow: ellipsis;">
+                            {{ v }}
+                          </td>
+                        {% endfor %}
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div style="padding: 14px; color:#666;">
+                No rows found in this table.
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div style="padding: 16px; border: 1px dashed #ddd; border-radius: 10px; color:#666;">
+          Pick one or more tables on the left and click <strong>Show tables</strong>.
+          <br>
+          Your DB includes tables like <code>users</code>, <code>todos</code>, <code>accounts</code>, <code>ausgaben</code>, <code>income</code>, <code>budget</code>, etc.  [oai_citation:1‡TODOS.sql.txt](sediment://file_00000000ee20720a862515baf6ca17de)
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function filterTables() {
+    const q = document.getElementById("tableFilter").value.toLowerCase();
+    document.querySelectorAll(".table-option").forEach(label => {
+      const text = label.innerText.toLowerCase();
+      label.style.display = text.includes(q) ? "block" : "none";
+    });
+  }
+
+  function selectNone() {
+    document.querySelectorAll('input[name="tables"]').forEach(cb => cb.checked = false);
+  }
+</script>
+
+{% endblock %}
