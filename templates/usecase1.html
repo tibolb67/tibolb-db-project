@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="max-width: 1100px;">
+  <h2 style="margin: 20px 0 14px;">Use Case 1 – Erfassung einer Ausgabe</h2>
+
+  <div class="card" style="border-radius: 10px;">
+    <div class="card-body">
+      <table class="table table-bordered align-middle" style="margin:0;">
+        <tbody>
+          <tr>
+            <th style="width: 30%;">Kurzbeschreibung</th>
+            <td>Die Nutzer*innen erfassen eine Ausgabe mit Betrag, Datum und Kategorie, die in der Datenbank gespeichert wird.</td>
+          </tr>
+          <tr>
+            <th>Beteiligte Akteure</th>
+            <td>Nutzer*in</td>
+          </tr>
+          <tr>
+            <th>Auslöser</th>
+            <td>Nutzer*in möchte eine Ausgabe eintragen</td>
+          </tr>
+          <tr>
+            <th>Vorbedingungen</th>
+            <td>Nutzer*in muss eingeloggt sein</td>
+          </tr>
+          <tr>
+            <th>Normalablauf</th>
+            <td>
+              <ol style="margin:0; padding-left: 18px;">
+                <li>Nutzer*in klickt auf “Add” (Name kann verändert werden)</li>
+                <li>Nutzer*in gibt Betrag, Datum und Kategorie ein</li>
+                <li>Nutzer*in wählt einen Account</li>
+                <li>Ausgabe wird gespeichert</li>
+              </ol>
+            </td>
+          </tr>
+          <tr>
+            <th>Alternative Abläufe</th>
+            <td>
+              Kategorie existiert nicht (z.B. kein Essen oder Freizeit)
+              <ol style="margin:6px 0 0; padding-left: 18px;">
+                <li>Nutzer*in soll eine neue Kategorie herstellen</li>
+              </ol>
+              <div style="margin-top:10px;">
+                Daten fehlen (nicht eingetragen) z.B. kein Datum
+                <ol style="margin:6px 0 0; padding-left: 18px;">
+                  <li>System fragt für eine Ergänzung</li>
+                </ol>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th>Ergebnis</th>
+            <td>Ausgabe ist gespeichert und wird dem korrekten Account geordnet</td>
+          </tr>
+          <tr>
+            <th>Bemerkungen</th>
+            <td>Wird später für Berechnungen oder Verlauf genutzt.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

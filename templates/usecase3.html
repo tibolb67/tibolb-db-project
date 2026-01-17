@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="max-width: 1100px;">
+  <h2 style="margin: 20px 0 14px;">Use Case 3 – Zahlungserinnerungen</h2>
+
+  <div class="card" style="border-radius: 10px;">
+    <div class="card-body">
+      <table class="table table-bordered align-middle" style="margin:0;">
+        <tbody>
+          <tr>
+            <th style="width: 30%;">Kurzbeschreibung</th>
+            <td>Das System erinnert Nutzer*innen automatisch an offene Zahlungen.</td>
+          </tr>
+          <tr>
+            <th>Beteiligte Akteure</th>
+            <td>Nutzer*in</td>
+          </tr>
+          <tr>
+            <th>Auslöser</th>
+            <td>Eine Zahlung hat ihr Datum erreicht</td>
+          </tr>
+          <tr>
+            <th>Vorbedingungen</th>
+            <td>Zahlung muss ein Fälligkeitsdatum haben, sodass die Erinnerung aktiviert wird</td>
+          </tr>
+          <tr>
+            <th>Normalablauf</th>
+            <td>
+              <ol style="margin:0; padding-left: 18px;">
+                <li>Nutzer*in fügt eine Zahlung mit Fälligkeitsdatum ein</li>
+                <li>System prüft offene Zahlungen</li>
+                <li>System sendet automatisch eine Zahlungserinnerung</li>
+              </ol>
+            </td>
+          </tr>
+          <tr>
+            <th>Alternative Abläufe</th>
+            <td>
+              Fälligkeitsdatum fehlt oder ist falsch geschrieben (z.B. 13.26.2013)
+              <ol style="margin:6px 0 0; padding-left: 18px;">
+                <li>System fragt für ein neues Datum oder eine Ergänzung</li>
+              </ol>
+            </td>
+          </tr>
+          <tr>
+            <th>Ergebnis</th>
+            <td>Nutzer*in bekommt rechtzeitig eine Zahlungserinnerung</td>
+          </tr>
+          <tr>
+            <th>Bemerkungen</th>
+            <td>Weniger vergessene oder verspätete Zahlungen</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
