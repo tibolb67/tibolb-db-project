@@ -10,10 +10,10 @@ login_manager = LoginManager()
 
 
 class User(UserMixin):
-    def __init__(self, id, username, password):
+    def __init__(self, id, username, password_hash):
         self.id = id
         self.username = username
-        self.password = password
+        self.password_hash = password_hash
 
     @staticmethod
     def get_by_id(user_id):
@@ -30,7 +30,7 @@ class User(UserMixin):
             return None
 
         if row:
-            return User(row["id"], row["username"], row["password"])
+            return User(row["id"], row["username"], row["password_hash"])
         else:
             logger.warning("User.get_by_id(): kein User mit id=%s gefunden", user_id)
             return None
@@ -50,7 +50,7 @@ class User(UserMixin):
             return None
 
         if row:
-            return User(row["id"], row["username"], row["password"])
+            return User(row["id"], row["username"], row["password_hash"])
         else:
             logger.info("User.get_by_username(): kein User mit username=%s", username)
             return None
@@ -86,7 +86,7 @@ def register_user(username, password):
     hashed = generate_password_hash(password)
     try:
         db_write(
-            "INSERT INTO users (username, password) VALUES (%s, %s)",
+            "INSERT INTO users (username, password_hash) VALUES (%s, %s)"
             (username, hashed)
         )
         logger.info("register_user(): User '%s' erfolgreich angelegt", username)
@@ -105,7 +105,7 @@ def authenticate(username, password):
         logger.warning("authenticate(): kein User mit username='%s' gefunden", username)
         return None
 
-    if check_password_hash(user.password, password):
+    if check_password_hash(user.password_hash, password):
         logger.info("authenticate(): Passwort korrekt für '%s'", username)
         return user
 
