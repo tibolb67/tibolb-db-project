@@ -133,6 +133,56 @@ def complete():
 
 
 
+@app.route("/dbexplorer", methods=["GET", "POST"])
+@login_required
+def dbexplorer():
+    # 1) Fetch all table names (MySQL)
+    tables_raw = db_read("SHOW TABLES")
+    all_tables = [next(iter(r.values())) for r in tables_raw]  # first column of each dict
+
+    # 2) Defaults
+    selected_tables = []
+    limit = 50
+    results = {}
+    error = None
+
+    # 3) Handle form submit
+    if request.method == "POST":
+        selected_tables = request.form.getlist("tables")
+
+        # limit parsing + guardrails
+        try:
+            limit = int(request.form.get("limit", 50))
+        except ValueError:
+            limit = 50
+        limit = max(1, min(limit, 1000))
+
+        # Optional: quick "jump to table" text field
+        quick_table = (request.form.get("quick_table") or "").strip()
+        if quick_table:
+            selected_tables = list(dict.fromkeys(selected_tables + [quick_table]))  # add unique
+
+        allowed = set(all_tables)
+
+        for t in selected_tables:
+            if t not in allowed:
+                error = f"Unknown table: {t}"
+                continue
+
+            # Backticks are important for table names; we still validate against allowed set.
+            rows = db_read(f"SELECT * FROM `{t}` LIMIT %s", (limit,))
+            results[t] = rows
+
+    return render_template(
+        "dbexplorer.html",
+        all_tables=all_tables,
+        selected_tables=selected_tables,
+        results=results,
+        limit=limit,
+        error=error,
+    )
+
+
 
 
 
