@@ -86,7 +86,7 @@ def register_user(username, password):
     hashed = generate_password_hash(password)
     try:
         db_write(
-            "INSERT INTO users (username, password_hash) VALUES (%s, %s)"
+            "INSERT INTO users (username, password_hash) VALUES (%s, %s)",
             (username, hashed)
         )
         logger.info("register_user(): User '%s' erfolgreich angelegt", username)
