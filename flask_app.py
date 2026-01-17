@@ -186,36 +186,6 @@ def dbexplorer():
 from flask import render_template
 from flask_login import login_required
 
-@app.route("/usecases")
-@login_required
-def usecases_index():
-    return render_template("usecases_index.html")
-
-@app.route("/usecase1")
-@login_required
-def usecase1():
-    return render_template("usecase1.html")
-
-@app.route("/usecase2")
-@login_required
-def usecase2():
-    return render_template("usecase2.html")
-
-@app.route("/usecase3")
-@login_required
-def usecase3():
-    return render_template("usecase3.html")
-
-@app.route("/usecase4")
-@login_required
-def usecase4():
-    return render_template("usecase4.html")
-
-@app.route("/usecase5")
-@login_required
-def usecase5():
-    return render_template("usecase5.html")
-
 
 if __name__ == "__main__":
     app.run()
