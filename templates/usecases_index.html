@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="max-width: 1100px;">
+  <h2 style="margin: 20px 0 14px;">Use Cases</h2>
+
+  <div class="list-group">
+    <a class="list-group-item list-group-item-action" href="{{ url_for('usecase1') }}">Use Case 1 – Erfassung einer Ausgabe</a>
+    <a class="list-group-item list-group-item-action" href="{{ url_for('usecase2') }}">Use Case 2 – Account hinzufügen</a>
+    <a class="list-group-item list-group-item-action" href="{{ url_for('usecase3') }}">Use Case 3 – Zahlungserinnerungen</a>
+    <a class="list-group-item list-group-item-action" href="{{ url_for('usecase4') }}">Use Case 4 – Budget festlegen & überwachen</a>
+    <a class="list-group-item list-group-item-action" href="{{ url_for('usecase5') }}">Use Case 5 – Accounts wechseln</a>
+  </div>
+</div>
+{% endblock %}
