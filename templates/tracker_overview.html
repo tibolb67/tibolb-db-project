@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin: 16px 0;">
+  <h2 style="margin:0;">Monatsübersicht 📊</h2>
+  <div>
+    <a class="btn btn-default" href="/tracker">Zurück zum Tracker</a>
+  </div>
+</div>
+
+<div class="todo-form" style="margin-top:0;">
+  <h4 style="margin-top:0;">Summe pro Kategorie (aktueller Monat)</h4>
+
+  <div style="overflow:auto;">
+    <table class="table table-striped table-bordered" style="margin:0;">
+      <thead>
+        <tr>
+          <th>Kategorie</th>
+          <th>Total (CHF)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td>{{ r.kategorie }}</td>
+            <td>CHF {{ "%.2f"|format(r.total) }}</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="2" class="text-muted">Keine Daten für diesen Monat.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}

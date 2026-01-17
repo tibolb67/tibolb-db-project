@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin: 16px 0;">
+  <h2 style="margin:0;">Expenses Tracker 💸</h2>
+  <div>
+    <a class="btn btn-default" href="/tracker/overview">Monatsübersicht</a>
+    <a class="btn btn-default" href="/dbexplorer">DB Explorer</a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="todo-form" style="margin-top:0;">
+      <h4 style="margin-top:0;">Account</h4>
+
+      <form method="POST" action="/tracker" style="margin-bottom:12px;">
+        <input type="hidden" name="action" value="switch_account">
+        <div class="form-group">
+          <label>Aktiver Account</label>
+          <select class="form-control" name="account_id">
+            {% for a in accounts %}
+              <option value="{{ a.account_id }}" {% if a.account_id == selected_account_id %}selected{% endif %}>
+                {{ a.name }} ({{ a.type }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <button class="btn btn-default">Wechseln</button>
+      </form>
+
+      <hr>
+
+      <h4>Neuer Account</h4>
+      <form method="POST" action="/tracker">
+        <input type="hidden" name="action" value="add_account">
+        <div class="form-group">
+          <label>Name</label>
+          <input class="form-control" name="name" placeholder="z.B. Main account" required>
+        </div>
+        <div class="form-group">
+          <label>Typ</label>
+          <select class="form-control" name="type">
+            <option value="private">private</option>
+            <option value="savings">savings</option>
+            <option value="checking">checking</option>
+            <option value="youth">youth</option>
+          </select>
+        </div>
+        <button class="btn btn-primary">Account hinzufügen</button>
+      </form>
+
+      <hr>
+
+      <h4>Neue Kategorie</h4>
+      <form method="POST" action="/tracker">
+        <input type="hidden" name="action" value="add_category">
+        <div class="form-group">
+          <label>Name</label>
+          <input class="form-control" name="cat_name" placeholder="z.B. Transport" required>
+        </div>
+        <button class="btn btn-primary">Kategorie hinzufügen</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="todo-form" style="margin-top:0;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h4 style="margin:0;">Ausgaben</h4>
+        <div style="font-weight:700;">Monat Total: CHF {{ "%.2f"|format(total_month) }}</div>
+      </div>
+
+      <hr style="margin:12px 0;">
+
+      <form method="POST" action="/tracker" class="row" style="margin:0;">
+        <input type="hidden" name="action" value="add_expense">
+
+        <div class="col-sm-3" style="padding-left:0;">
+          <div class="form-group">
+            <label>Betrag (CHF)</label>
+            <input class="form-control" name="betrag" type="number" step="0.01" required>
+          </div>
+        </div>
+
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label>Kategorie</label>
+            <select class="form-control" name="kategorie_id" required>
+              {% for c in categories %}
+                <option value="{{ c.kategorie_id }}">{{ c.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm-5" style="padding-right:0;">
+          <div class="form-group">
+            <label>Datum</label>
+            <input class="form-control" name="datum" type="datetime-local" required>
+          </div>
+        </div>
+
+        <div class="col-sm-12" style="padding:0;">
+          <button class="btn btn-success">Ausgabe speichern</button>
+        </div>
+      </form>
+
+      <hr>
+
+      <div style="overflow:auto;">
+        <table class="table table-striped table-bordered" style="margin:0;">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Kategorie</th>
+              <th>Betrag</th>
+              <th style="width:1px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in expenses %}
+              <tr>
+                <td>{{ e.datum }}</td>
+                <td>{{ e.kategorie }}</td>
+                <td>CHF {{ "%.2f"|format(e.betrag) }}</td>
+                <td>
+                  <form method="POST" action="/tracker" style="margin:0;">
+                    <input type="hidden" name="action" value="delete_expense">
+                    <input type="hidden" name="ausgabe_id" value="{{ e.ausgabe_id }}">
+                    <button class="btn btn-xs btn-danger">X</button>
+                  </form>
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-muted">Keine Ausgaben gefunden.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:12px; color:#777;">
+        Tipp: Dein Datenbank-Schema nutzt <code>accounts</code>, <code>ausgaben</code>, <code>kategorien</code>.  [oai_citation:2‡TODOS.sql.txt](sediment://file_000000003e88722fb8432523a23a5cb1)
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
