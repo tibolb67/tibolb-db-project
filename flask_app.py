@@ -187,5 +187,196 @@ from flask import render_template
 from flask_login import login_required
 
 
+from flask import session, flash
+
+def _get_user_accounts():
+    return db_read(
+        "SELECT account_id, name, type FROM accounts WHERE user_id=%s ORDER BY account_id",
+        (current_user.id,),
+    )
+
+def _get_categories():
+    return db_read("SELECT kategorie_id, name FROM kategorien ORDER BY name")
+
+def _selected_account_id(accounts):
+    sel = session.get("selected_account_id")
+    if sel and any(a["account_id"] == int(sel) for a in accounts):
+        return int(sel)
+    if accounts:
+        session["selected_account_id"] = int(accounts[0]["account_id"])
+        return int(accounts[0]["account_id"])
+    return None
+
+
+@app.route("/tracker", methods=["GET", "POST"])
+@login_required
+def tracker():
+    accounts = _get_user_accounts()
+    categories = _get_categories()
+    selected = _selected_account_id(accounts)
+
+    # Handle all actions from this page via "action"
+    if request.method == "POST":
+        action = request.form.get("action", "")
+
+        # Switch account
+        if action == "switch_account":
+            new_id = request.form.get("account_id")
+            ok = db_read(
+                "SELECT account_id FROM accounts WHERE user_id=%s AND account_id=%s",
+                (current_user.id, new_id),
+                single=True,
+            )
+            if ok:
+                session["selected_account_id"] = int(new_id)
+            return redirect(url_for("tracker"))
+
+        # Add account
+        if action == "add_account":
+            name = (request.form.get("name") or "").strip()
+            acc_type = request.form.get("type") or "private"
+            if not name:
+                flash("Account name darf nicht leer sein.", "warning")
+                return redirect(url_for("tracker"))
+
+            exists = db_read(
+                "SELECT account_id FROM accounts WHERE user_id=%s AND name=%s",
+                (current_user.id, name),
+                single=True,
+            )
+            if exists:
+                flash("Account existiert schon.", "warning")
+                return redirect(url_for("tracker"))
+
+            db_write(
+                "INSERT INTO accounts (user_id, name, type) VALUES (%s, %s, %s)",
+                (current_user.id, name, acc_type),
+            )
+            flash("Account erstellt ", "success")
+            return redirect(url_for("tracker"))
+
+        # Add category
+        if action == "add_category":
+            cat_name = (request.form.get("cat_name") or "").strip()
+            if not cat_name:
+                flash("Kategorie darf nicht leer sein.", "warning")
+                return redirect(url_for("tracker"))
+
+            exists = db_read(
+                "SELECT kategorie_id FROM kategorien WHERE name=%s",
+                (cat_name,),
+                single=True,
+            )
+            if exists:
+                flash("Kategorie existiert schon.", "warning")
+                return redirect(url_for("tracker"))
+
+            db_write("INSERT INTO kategorien (name) VALUES (%s)", (cat_name,))
+            flash("Kategorie erstellt ", "success")
+            return redirect(url_for("tracker"))
+
+        # Add expense
+        if action == "add_expense":
+            if not selected:
+                flash("Bitte zuerst einen Account erstellen.", "warning")
+                return redirect(url_for("tracker"))
+
+            kategorie_id = request.form.get("kategorie_id")
+            betrag = request.form.get("betrag")
+            datum = request.form.get("datum")  # datetime-local
+
+            if not (kategorie_id and betrag and datum):
+                flash("Bitte alle Felder ausfüllen.", "warning")
+                return redirect(url_for("tracker"))
+
+            db_write(
+                "INSERT INTO ausgaben (account_id, kategorie_id, datum, betrag) VALUES (%s, %s, %s, %s)",
+                (selected, kategorie_id, datum, betrag),
+            )
+            flash("Ausgabe gespeichert 💸", "success")
+            return redirect(url_for("tracker"))
+
+        # Delete expense
+        if action == "delete_expense":
+            ausgabe_id = request.form.get("ausgabe_id")
+            if selected and ausgabe_id:
+                db_write(
+                    "DELETE FROM ausgaben WHERE ausgabe_id=%s AND account_id=%s",
+                    (ausgabe_id, selected),
+                )
+                flash("Ausgabe gelöscht 🧹", "success")
+            return redirect(url_for("tracker"))
+
+    # Load expenses + totals
+    expenses = []
+    total_month = 0
+
+    if selected:
+        expenses = db_read(
+            """
+            SELECT a.ausgabe_id, a.datum, a.betrag, k.name AS kategorie
+            FROM ausgaben a
+            JOIN kategorien k ON k.kategorie_id = a.kategorie_id
+            WHERE a.account_id=%s
+            ORDER BY a.datum DESC
+            LIMIT 100
+            """,
+            (selected,),
+        )
+
+        s = db_read(
+            """
+            SELECT COALESCE(SUM(betrag),0) AS total
+            FROM ausgaben
+            WHERE account_id=%s
+              AND YEAR(datum)=YEAR(CURDATE())
+              AND MONTH(datum)=MONTH(CURDATE())
+            """,
+            (selected,),
+            single=True,
+        )
+        total_month = (s or {}).get("total", 0)
+
+    return render_template(
+        "tracker.html",
+        accounts=accounts,
+        categories=categories,
+        selected_account_id=selected,
+        expenses=expenses,
+        total_month=total_month,
+    )
+
+
+@app.route("/tracker/overview")
+@login_required
+def tracker_overview():
+    # Simple overview: totals per category (current month, selected account)
+    accounts = _get_user_accounts()
+    selected = _selected_account_id(accounts)
+
+    rows = []
+    if selected:
+        rows = db_read(
+            """
+            SELECT k.name AS kategorie, COALESCE(SUM(a.betrag),0) AS total
+            FROM ausgaben a
+            JOIN kategorien k ON k.kategorie_id=a.kategorie_id
+            WHERE a.account_id=%s
+              AND YEAR(a.datum)=YEAR(CURDATE())
+              AND MONTH(a.datum)=MONTH(CURDATE())
+            GROUP BY k.name
+            ORDER BY total DESC
+            """,
+            (selected,),
+        )
+
+    return render_template(
+        "tracker_overview.html",
+        accounts=accounts,
+        selected_account_id=selected,
+        rows=rows,
+    )
+
+
 if __name__ == "__main__":
     app.run()
